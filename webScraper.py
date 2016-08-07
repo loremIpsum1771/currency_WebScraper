@@ -35,3 +35,58 @@ for row in table.xpath(".//tr")[1:]:
 	#print [cell for cell in row.xpath(".//th/a/@href")]
 #print "links: " 
 #print links
+i = 0
+for i in range(0, len(links)):
+	response2 = requests.get(url + links[i])
+	print "currentLink (second loop) : " + (url + links[i])
+	root2 = fromstring(response2.content) 
+	table2 = root2.xpath('.//*[@class="statistics"]')[0]  
+	for eachRow in table2.xpath(".//tr")[1:]:
+    
+	    currentDate = eachRow.xpath(".//th/text()")[0]
+	    currentRate = (eachRow.xpath(".//td/text()")[0].strip())
+	    #currentRate.replace(" ", "")
+	    #print " currentDate: " + currentDate
+	    #print "currentRate: " + currentRate
+	    dates.append(currentDate)
+	    rates.append(currentRate)
+	tableData = []
+	tableData.append(dates)
+	tableData.append(rates)
+	exchangeInfo[countryNames[i]] = tableData
+	print "type of: " + str(type(rates[0]))
+	dates = []
+	rates = []
+
+
+# print "countryNames: " 
+# print countryNames
+
+# print "rates: "
+# print rates
+
+# print "dates: "
+# print dates
+print "length of names: " + str(len(countryNames))
+
+i = 0
+while i < len(countryNames):
+	countries[countryNames[i]] = {
+			'link' : links[i],
+			'currencyName' : currencies[i],
+			'Date' : exchangeInfo[countryNames[i]][0],
+			'Rates' : exchangeInfo[countryNames[i]][1]
+	}
+	i+=1
+
+print "countryNames: "
+print countryNames
+print "dates: "
+print dates
+# json=json.dumps(exchangeInfo)
+# print json	
+
+
+with open('data.json', 'w') as outfile:
+    json.dump(countries, outfile,indent=4, sort_keys=True)
+    
